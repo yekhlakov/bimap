@@ -4,6 +4,10 @@
 
 int main ()
 {
+	// maxy::bimap<long, long> failed_map; // key and value types must be different
+
+	std::cout << "Unordered bimap:\n";
+
 	maxy::unordered_bimap<int, std::string> bm;
 
 	bm.set (100, "ururu");
@@ -32,7 +36,7 @@ int main ()
 	std::cout << "\n";
 
 	int c = 0;
-	std::cout << "iterate keys\n";
+	std::cout << "\niterate keys\n";
 	for (auto e : bm)
 	{
 		std::cout << ++c << ": " << e->first << " => " << e->second << "\n";
@@ -45,26 +49,36 @@ int main ()
 		std::cout << ++c << ": " << (*b)->first << " => " << (*b)->second << "\n";
 	}
 
+	//auto fail = bm.rbegin (); // this must fail as unordered_map does not have a reverse iterator
+
 
 	maxy::bimap<int, std::string> obm;
 
 	obm.insert (1, "sdfg");
 	obm.insert (10, "zxcv");
 	obm.insert (5, "asdf");
+	obm.insert (-1, "iuyt");
 
-	std::cout << "Ordered bimap:\n";
+	std::cout << "\n\nOrdered bimap:\n";
 
 	c = 0;
 	std::cout << "iterate keys\n";
 	for (auto e : obm)
-	{
 		std::cout << ++c << ": " << e->first << " => " << e->second << "\n";
-	}
 
 	c = 0;
 	std::cout << "iterate values\n";
 	for (auto b = obm.vbegin (); b != obm.vend (); b++)
-	{
 		std::cout << ++c << ": " << (*b)->first << " => " << (*b)->second << "\n";
-	}
+
+	c = 0;
+	std::cout << "reverse iterate keys \n";
+	for (auto rk = obm.rbegin (); rk != obm.rend (); rk++)
+		std::cout << ++c << ": " << (*rk)->first << " => " << (*rk)->second << "\n";
+
+	c = 0;
+	std::cout << "reverse iterate values \n";
+	for (auto rv = obm.rvbegin (); rv != obm.rvend (); rv++)
+		std::cout << ++c << ": " << (*rv)->first << " => " << (*rv)->second << "\n";
+
 }
