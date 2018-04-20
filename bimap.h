@@ -26,11 +26,9 @@ namespace maxy
 		value_map_type backward;
 
 		// templated getter for internal maps
-		template<typename T> map_type<T> & get_map ();
-		template<> 
-		map_type<Kt> & get_map () { return forward; }
-		template<>
-		map_type<Vt> & get_map () { return backward; }
+		template<typename T> map_type<T> & get_map () { get_map((T*)nullptr); }
+		map_type<Kt> & get_map (Kt *) { return forward; }
+		map_type<Vt> & get_map (Vt *) { return backward; }
 
 		// put a pair into the _bimap and disregard any possible conflicts
 		storage_type * raw_set (Kt key, Vt value)
@@ -155,9 +153,10 @@ namespace maxy
 			// begin constructor
 			iterator (_bimap & m) : map{m} { it = m.get_map<T>().begin (); }
 			// 'end' constructor
-			iterator (_bimap & m, map_iterator_type & i) : map{m}, it{i} {}
+			iterator (_bimap & m, map_iterator_type i) : map{m}, it{i} {}
 			// copy constructor is default
 			iterator (iterator & o) = default;
+			iterator (iterator && o) = default;
 			// destructor is default
 			~iterator () = default;
 
@@ -169,9 +168,32 @@ namespace maxy
 			bool operator!= (const iterator & o) { return &map != &o.map || it != o.it; }
 
 			// define decrement if the container allows
-			template<typename = std::enable_if<std::is_same<std::iterator_traits<map_type<T>>::iterator_category, std::bidirectional_iterator_tag>>::value, bool>
+			template
+			<
+			    typename = std::enable_if
+			    <
+				std::is_same
+				<
+				    typename std::iterator_traits<typename map_type<T>::iterator>::iterator_category,
+				    std::bidirectional_iterator_tag
+				>::value,
+				bool
+			    >
+			>
 			iterator & operator--() { --it; return *this; };
-			template<typename = std::enable_if<std::is_same<std::iterator_traits<map_type<T>>::iterator_category, std::bidirectional_iterator_tag>>::value, bool>
+
+			template
+			<
+			    typename = std::enable_if
+			    <
+				std::is_same
+				<
+				    typename std::iterator_traits<typename map_type<T>::iterator>::iterator_category,
+				    std::bidirectional_iterator_tag
+				>::value,
+				bool
+			    >
+			>
 			iterator operator--(int) { auto x = *this; --it; return *this; };
 
 			// element access; iterator gives const access to pair storage
@@ -179,7 +201,7 @@ namespace maxy
 		};
 
 		// Reverse iterator
-		template<typename T, typename R = map_type<T>::reverse_iterator>
+		template<typename T, typename R = typename map_type<T>::reverse_iterator>
 		class reverse_iterator
 		{
 			// helper type
@@ -194,9 +216,10 @@ namespace maxy
 			// begin constructor
 			reverse_iterator (_bimap & m) : map{m} { it = m.get_map<T> ().rbegin (); }
 			// 'end' constructor
-			reverse_iterator (_bimap & m, map_iterator_type & i) : map{m}, it{i} {}
+			reverse_iterator (_bimap & m, map_iterator_type i) : map{m}, it{i} {}
 			// copy constructor is default
 			reverse_iterator (reverse_iterator & o) = default;
+			reverse_iterator (reverse_iterator && o) = default;
 			// destructor is default
 			~reverse_iterator () = default;
 
