@@ -37,8 +37,8 @@ namespace maxy
 
 		// templated getter for internal maps
 		template<typename T> map_type<T> & get_map () { return get_map((T*)nullptr); }
-		map_type<Kt> & get_map (Kt *) { return forward; }
-		map_type<Vt> & get_map (Vt *) { return backward; }
+		key_map_type & get_map (Kt *) { return forward; }
+		value_map_type & get_map (Vt *) { return backward; }
 
 		// put a pair into the _bimap and disregard any possible conflicts
 		storage_type * raw_set (Kt key, Vt value)
@@ -139,7 +139,6 @@ namespace maxy
 		// Remove element by key or value; return true if removed anything.
 		bool erase (const Kt & k) { return raw_erase (k); }
 		bool erase (const Vt & k) { return raw_erase (k); }
-		//bool erase (Vt v) { return raw_erase (v); }
 
 		// Access elements by subscript operator (which is convenient)
 		const storage_type * operator[] (const Kt & k) { return raw_access (k); }
@@ -252,6 +251,7 @@ namespace maxy
 		// end reverse iterator by value
 		reverse_iterator<Vt> rvend () { return reverse_iterator<Vt>{*this, backward.rend () }; }
 
+		size_t size() { return forward.size(); }
 	};
 
 	// unordered bimap (based on std::unordered_map)
