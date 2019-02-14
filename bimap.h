@@ -105,6 +105,8 @@ namespace maxy
 			{
 				s0 = x->second;
 				forward.erase (p->first);
+				backward.erase (s0->second);
+				delete s0;
 			}
 
 			auto y = backward.find (p->second);
@@ -112,11 +114,9 @@ namespace maxy
 			{
 				s1 = y->second;
 				backward.erase (p->second);
+				forward.erase (s1->first);
+				if (s1 != s0) delete s1;
 			}
-
-			// delete old storage elements
-			if (s0) delete s0;
-			if (s1 && s1 != s0) delete s1;
 
 			return raw_set (p);
 		}
